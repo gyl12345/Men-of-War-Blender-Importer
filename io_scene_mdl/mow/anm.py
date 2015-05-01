@@ -51,7 +51,7 @@ class ANM:
         self.entities = []
         self.keyframes = []
 
-        #self.open()
+        self.open()
 
     def open(self):
         with open(self.path, "rb") as f:
