@@ -1,3 +1,8 @@
+# Initial version of this file by Stan Bobovych
+# The original version can be found here https://github.com/sbobovyc/GameTools/blob/master/MoW/ply.py
+
+# Further enhancements modifications by Björn Martins Paz
+
 from __future__ import print_function
 
 import struct
@@ -79,24 +84,24 @@ class PLY:
                 if entry == SUPPORTED_ENTRY[2]: #VERT
                     verts, = struct.unpack("<I", f.read(4))
                     print("Number of verts: %i at %s" % (verts, hex(f.tell())))
-                    vertex_description, = struct.unpack("<I", f.read(4))
-                    print("Vertex description:", hex(vertex_description))
+                    self.vertex_description, = struct.unpack("<I", f.read(4))
+                    print("Vertex description:", hex(self.vertex_description))
                     index = 0
                     for i in range(0, verts):
-                        if vertex_description == 0x00010024:
+                        if self.vertex_description == 0x00010024:
                             vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffff4xff", f.read(36))
-                        elif vertex_description == 0x00070020:
+                        elif self.vertex_description == 0x00070020:
                             vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffffff", f.read(32))
-                        elif vertex_description == 0x00070024:
+                        elif self.vertex_description == 0x00070024:
                             vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffff4xff", f.read(36))
-                        elif vertex_description == 0x00070028:
+                        elif self.vertex_description == 0x00070028:
                             vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffff8xff", f.read(40))
-                        elif vertex_description == 0x00070030:
+                        elif self.vertex_description == 0x00070030:
                             vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffffff16x", f.read(48))
-                        elif vertex_description == 0x00070038:
+                        elif self.vertex_description == 0x00070038:
                             vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffffff24x", f.read(56))
                         else:
-                            raise Exception("Unknown format: %s" % hex(vertex_description))
+                            raise Exception("Unknown format: %s" % hex(self.vertex_description))
                         if verbose:
                             print("Vertex %i: " % i,vx,vy,vz)
                         self.positions.append((vx,vy,vz))

@@ -101,7 +101,7 @@ class MDL:
 	def build_blender_scene(self, blender_context, use_animations):
 		print("Building Blender scene")
 		# Build blender armature (bones)
-		self.root_node.build_blender_armature(blender_context)
+		#self.root_node.build_blender_armature(blender_context)
 		# Build blender data first (meshes, objects, ...)
 		self.root_node.build_blender_data(blender_context)
 		# Build blender scene (link object hierarchy, link to scene, ...)

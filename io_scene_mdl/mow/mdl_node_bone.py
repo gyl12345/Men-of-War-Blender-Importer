@@ -47,7 +47,7 @@ class MDL_NODE_BONE(MDL_NODE):
 		self.register_on_skeleton()
 
 	def find_skeleton_parent(self):
-		# Check if still don't have a reference to our parent skeleton node
+		# Check if we still don't have a reference to our parent skeleton node
 		if self.parent_skeleton_node == None:
 			node = self
 			# Find the skeleton node

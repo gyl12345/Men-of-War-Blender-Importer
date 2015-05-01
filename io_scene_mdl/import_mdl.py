@@ -53,7 +53,7 @@ def load(operator, context, **keywords):
 
 	# Get rid of all existing objects in the scene
     for obj in bpy.context.scene.objects:
-        obj.select = obj.type == 'MESH'
+        obj.select = obj.type == 'MESH' or obj.type == 'EMPTY'
     bpy.ops.object.delete()
 
     mdl = MDL(filepath)

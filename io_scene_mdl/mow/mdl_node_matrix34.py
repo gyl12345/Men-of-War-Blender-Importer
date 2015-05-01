@@ -45,6 +45,14 @@ class MDL_NODE_MATRIX34(MDL_NODE):
 			( float(0.0), float(0.0), float(0.0), float(1.0) )
 		)
 
+		# # Build the orientation matrix
+		# self.orientation_vol = (
+		# 	( float(values[1]), float(values[4]), float(values[7]), float(0.0) ),
+		# 	( float(values[2]), float(values[5]), float(values[8]), float(0.0) ),
+		# 	( float(values[3]), float(values[6]), float(values[9]), float(0.0) ),
+		# 	( float(0.0), float(0.0), float(0.0), float(1.0) )
+		# )
+
 		self.matrix_4x4 = (
 			( float(values[1]), float(values[2]), float(values[3]), float(values[10]) ),
 			( float(values[4]), float(values[5]), float(values[6]), float(values[11]) ),

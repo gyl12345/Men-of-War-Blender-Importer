@@ -40,6 +40,8 @@ FRAME_TYPE_POSITION = 1
 FRAME_TYPE_QUATERNION = 2
 FRAME_TYPE_INVERTED = 4
 FRAME_TYPE_UNKOWN = 8
+FRAME_TYPE_UNKOWN2= 16
+FRAME_TYPE_VERTICES = 32
 SUPPORTED_ENTRY = [b"FRMS", b"BMAP", b"FRM2"]
 
 class ANM:
@@ -49,9 +51,9 @@ class ANM:
         self.entities = []
         self.keyframes = []
 
-        self.open(self.path)
+        #self.open()
 
-    def open(self, peek=False, verbose=False):
+    def open(self):
         with open(self.path, "rb") as f:
             # read header
             magick, = struct.unpack("4s", f.read(4))
@@ -130,6 +132,37 @@ class ANM:
                         # Print a message if we find one of those strange 4th bit chunks
                         if keyframe_chunk_type & FRAME_TYPE_UNKOWN:
                             print("Unkown frame chunk bit 4 found!")
+
+                        # Check if this chunk has a vertex list
+                        if keyframe_chunk_type & FRAME_TYPE_VERTICES:
+                            # Read number of bytes of the vertex data
+                            bytes, = struct.unpack("<I", f.read(4))
+                            print("Number of bytes: %i at %s" % (bytes, hex(f.tell())))
+
+                            # Read some unknown data
+                            struct.unpack("f", f.read(4))
+
+                            # Read number of vertices
+                            verts, = struct.unpack("<H", f.read(2))
+                            print("Number of verts: %i at %s" % (verts, hex(f.tell())))
+
+                            # Read some unkonw data
+                            struct.unpack("2x", f.read(2))
+
+                            # Calculate vertex size
+                            vertex_size = (int)(bytes / verts)
+
+                            # Read vertices
+                            for i in range(0, verts):
+                                #f.read(vertex_size)
+                                vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffffff", f.read(32))
+                                #vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffffff16x", f.read(48))
+                            # Read some unknown data
+                            if keyframe_chunk_type & FRAME_TYPE_POSITION:
+                                struct.unpack("ffffffff", f.read(32))
+                                #struct.unpack("ffffffff16x", f.read(48))
+                            else:
+                                struct.unpack("ff", f.read(8))
 
                         # Add event type our frames event list
                         frame.events.append(frame_event)
