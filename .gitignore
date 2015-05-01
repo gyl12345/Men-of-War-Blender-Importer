@@ -1,3 +1,11 @@
+# Python stuff
+*.pyc
+__pycache__/
+
+# Sublime stuff
+*.sublime-project
+*.sublime-workspace
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
