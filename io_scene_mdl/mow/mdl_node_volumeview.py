@@ -21,6 +21,8 @@
 # Men of War MDL importer for Blender
 # Script Copyright (C) by Björn Martins Paz
 
+import sys
+
 from mdl_node import MDL_NODE
 from mdl_node_material import MDL_NODE_MATERIAL
 from mdl_node_diffuse import MDL_NODE_DIFFUSE
@@ -39,25 +41,29 @@ class MDL_NODE_VOLUMEVIEW(MDL_NODE):
 
 		print(type(self).__name__ + " Loading file " + filename)
 
-		# Create a mesh object and load the PLY file
-		self.ply = PLY(filename)
+		try:
+			# Create a mesh object and load the PLY file
+			self.ply = PLY(filename)
+		except:
+			print(sys.exc_info()[0])
 
-		# Get the name of the MTL file referenced inside the PLY file and add it to our data string for parsing
-		print("Material filename:", self.ply.material_file)
-		mtl_filename = self.path + self.ply.material_file
+		if self.ply:
+			# Get the name of the MTL file referenced inside the PLY file and add it to our data string for parsing
+			print("Material filename:", self.ply.material_file)
+			mtl_filename = self.path + self.ply.material_file
 
-		print(type(self).__name__ + " Loading file " + mtl_filename)
+			print(type(self).__name__ + " Loading file " + mtl_filename)
 
-		# Create a MDL_NODE_MATERIAL child node
-		mdl_node_material = self.create_node_from_type('MATERIAL', self)
-		#mdl_node_material.parent = self
-		mdl_node_material.path = self.path
+			# Create a MDL_NODE_MATERIAL child node
+			mdl_node_material = self.create_node_from_type('MATERIAL', self)
+			#mdl_node_material.parent = self
+			mdl_node_material.path = self.path
 
-		# Load the MTL file
-		mdl_node_material.open_file(mtl_filename)
+			# Load the MTL file
+			mdl_node_material.open_file(mtl_filename)
 
-		# Add the new material node to our child nodes
-		self.nodes.append(mdl_node_material)
+			# Add the new material node to our child nodes
+			self.nodes.append(mdl_node_material)
 
 		# Call our superclass load_data() method. This will also call the load_data() method of our newly created child MDL_NODE_MATERIAL
 		super(MDL_NODE_VOLUMEVIEW, self).load_data()
@@ -70,70 +76,71 @@ class MDL_NODE_VOLUMEVIEW(MDL_NODE):
 
 		super(MDL_NODE_VOLUMEVIEW, self).build_blender_data(blender_context)
 
-		print(type(self).__name__ + ".build_blender_data()")
+		if self.ply:
+			print(type(self).__name__ + ".build_blender_data()")
 
-		bone_name = None
-		naterial_node = None
-		diffuse_node = None
+			bone_name = None
+			naterial_node = None
+			diffuse_node = None
 
-		parent_node = self.parent
+			parent_node = self.parent
 
-		# Get parents bone name
-		while True:
-			# Check if we found a bone node
-			if type(parent_node) == MDL_NODE_BONE:
-				bone_name = parent_node.bone_name
-				break
-			# Check if we reached the root node without finding a bone node
-			elif parent_node == None:
-				raise Exception("No parent bone node found")
-			# Otherwise get the next parent
-			else:
-				parent_node = parent_node.parent
+			# Get parents bone name
+			while True:
+				# Check if we found a bone node
+				if type(parent_node) == MDL_NODE_BONE:
+					bone_name = parent_node.bone_name
+					break
+				# Check if we reached the root node without finding a bone node
+				elif parent_node == None:
+					raise Exception("No parent bone node found")
+				# Otherwise get the next parent
+				else:
+					parent_node = parent_node.parent
 
-		# Create a new mesh with our parents bone name
-		self.blender_mesh = bpy.data.meshes.new(bone_name)
+			# Create a new mesh with our parents bone name
+			self.blender_mesh = bpy.data.meshes.new(bone_name)
 
-		# Load vertices data into the mesh
-		self.blender_mesh.vertices.add(len(self.ply.positions))
-		self.blender_mesh.vertices.foreach_set("co", unpack_list(self.ply.positions))
+			# Load vertices data into the mesh
+			self.blender_mesh.vertices.add(len(self.ply.positions))
+			self.blender_mesh.vertices.foreach_set("co", unpack_list(self.ply.positions))
 
-		# Load face data into the mesh
-		self.blender_mesh.tessfaces.add(len(self.ply.indeces))
-		self.blender_mesh.tessfaces.foreach_set("vertices", unpack_list(self.ply.indeces))
+			# Load face data into the mesh
+			self.blender_mesh.tessfaces.add(len(self.ply.indeces))
+			self.blender_mesh.tessfaces.foreach_set("vertices", unpack_list(self.ply.indeces))
 
-		# Validate mesh
-		self.blender_mesh.validate()
+			# Validate mesh
+			self.blender_mesh.validate()
 
-		# Update mesh
-		self.blender_mesh.update(calc_edges=True)
+			# Update mesh
+			self.blender_mesh.update(calc_edges=True)
 
-		# Create a new UV layer
-		self.blender_mesh.uv_textures.new()
+			# Create a new UV layer
+			self.blender_mesh.uv_textures.new()
 
-		# Get the mesh UV layer
-		uv_layer = self.blender_mesh.uv_layers.active
+			# Get the mesh UV layer
+			uv_layer = self.blender_mesh.uv_layers.active
 
-		# Process all faces of the mesh
-		for face in self.blender_mesh.polygons:
-			# Process all loops of the mesh
-			for loop_index in face.loop_indices:
-				# Use loop_index to get to the actual loop and then get the vertex index from it
-				vertex_index = self.blender_mesh.loops[loop_index].vertex_index
-				# With the vertex index, append the UV data from that vertex to the UV array
-				uv_layer.data[loop_index].uv = self.ply.UVs[vertex_index]
+			# Process all faces of the mesh
+			for face in self.blender_mesh.polygons:
+				# Process all loops of the mesh
+				for loop_index in face.loop_indices:
+					# Use loop_index to get to the actual loop and then get the vertex index from it
+					vertex_index = self.blender_mesh.loops[loop_index].vertex_index
+					# With the vertex index, append the UV data from that vertex to the UV array
+					uv_layer.data[loop_index].uv = self.ply.UVs[vertex_index]
 
-		# Check if we have a material child node
-		for node in self.nodes:
-			if type(node) == MDL_NODE_MATERIAL:
-				material_node = node
+			# Check if we have a material child node
+			for node in self.nodes:
+				if type(node) == MDL_NODE_MATERIAL:
+					material_node = node
 
-		# Check if the material node has a diffuse node
-		for node in material_node.nodes:
-			if type(node) == MDL_NODE_DIFFUSE:
-				diffuse_node = node
+			# Check if the material node has a diffuse node
+			for node in material_node.nodes:
+				if type(node) == MDL_NODE_DIFFUSE:
+					diffuse_node = node
 
-		# Set the texture
-		if diffuse_node:
-			for uv_face in self.blender_mesh.uv_textures.active.data:
-				uv_face.image = diffuse_node.blender_images[diffuse_node.texturename]
+			# Set the texture
+			if diffuse_node:
+				for uv_face in self.blender_mesh.uv_textures.active.data:
+					uv_face.image = diffuse_node.blender_images[diffuse_node.texturename]

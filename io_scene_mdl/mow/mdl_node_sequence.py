@@ -21,6 +21,8 @@
 # Men of War MDL importer for Blender
 # Script Copyright (C) by Björn Martins Paz
 
+import sys
+
 from mdl_node import MDL_NODE
 from mdl_node_file import MDL_NODE_FILE
 
@@ -56,7 +58,11 @@ class MDL_NODE_SEQUENCE(MDL_NODE):
 		# Check if this animation file wasn't already loaded
 		if filename not in self.loaded_animation_files:
 			print(type(self).__name__ + " Loading file " + filename)
-			# Create an Animation object and load the ANM file
-			self.anm = ANM(filename)
+
+			try:
+				# Create an Animation object and load the ANM file
+				self.anm = ANM(filename)
+			except:
+				print(sys.exc_info()[0])
 			# Add filename into our loaded animation files
 			self.loaded_animation_files.append(filename)
