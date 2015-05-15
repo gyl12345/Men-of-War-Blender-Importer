@@ -21,18 +21,41 @@
 # Men of War MDL importer for Blender
 # Script Copyright (C) by Björn Martins Paz
 
-from mdl_node import MDL_NODE
+from mowdef_node import MOWDEF_NODE
+from mdl import MDL
+import sys
 
-class MDL_NODE_ROOT(MDL_NODE):
+class MOWDEF_NODE_EXTENSION(MOWDEF_NODE):
 	def __init__(self, parent):
-		super(MDL_NODE_ROOT, self).__init__(parent)
+		self.mdl = None
+		super(MOWDEF_NODE_EXTENSION, self).__init__(parent)
 
-	def get_skeleton_node(self):
-		from mdl_node_skeleton import MDL_NODE_SKELETON
-
-		# Find the skeleton node inside our child nodes
-		for node in self.nodes:
-			if type(node) == MDL_NODE_SKELETON:
-				return node
-
+	def blender_get_root_object(self):
+		if self.mdl:
+			return self.mdl.blender_get_root_object()
 		return None
+
+	def load_data(self):
+		super(MOWDEF_NODE_EXTENSION, self).load_data()
+
+		from mowdef_node_root import MOWDEF_NODE_ROOT
+
+		filename = None
+
+		# Get the name of the MDL file
+		filename = self.data.split()[1][1:-1]
+
+		# Build a complete filepath to the .MDL file
+		filename = self.path + filename
+
+		print(type(self).__name__ + " Loading file " + filename)
+
+		try:
+			# Create an MDL object and load the MDL file
+			self.mdl = MDL(filename)
+		except:
+			print(sys.exc_info()[0])
+
+	def build_blender_scene(self, blender_context, use_animations):
+		if self.mdl:
+			self.mdl.build_blender_scene(blender_context, use_animations)

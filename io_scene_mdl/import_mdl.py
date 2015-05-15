@@ -45,6 +45,7 @@ if cmd_subfolder not in sys.path:
     sys.path.insert(0, cmd_subfolder)
 
 from mdl import MDL
+from mowdef import MOWDEF
 
 def load(operator, context, **keywords):
     time_main = time.time()
@@ -56,11 +57,18 @@ def load(operator, context, **keywords):
         obj.select = obj.type == 'MESH' or obj.type == 'EMPTY'
     bpy.ops.object.delete()
 
-    mdl = MDL(filepath)
-
-    mdl.build_blender_scene(context, keywords['use_animations'])
-
-    mdl.print_type()
+    # Process MDL file
+    if filepath != None and os.path.splitext(filepath)[1][1:].strip() == "mdl":
+        mdl = MDL(filepath)
+        mdl.build_blender_scene(context, keywords['use_animations'])
+        mdl.print_type()
+    # Process DEF file
+    elif filepath != None and os.path.splitext(filepath)[1][1:].strip() == "def":
+        mowdef = MOWDEF(filepath)
+        mowdef.build_blender_scene(context, keywords['use_animations'])
+        mowdef.print_type()
+    else:
+        print("No .DEF file found")
 
     time_new = time.time()
 

@@ -23,40 +23,42 @@
 
 import os
 
-from mdl_node import MDL_NODE
+from mowdef_node import MOWDEF_NODE
 
-class MDL:
+class MOWDEF:
 	def __init__(self, filename):
 		self.data = None
+		self.root_node = None
 
 		# Create the root node with no parent
-		self.root_node = MDL_NODE.create_node_from_type('root', None)
+		self.root_node = MOWDEF_NODE.create_node_from_type('root', None)
+
+		# Add the path information to the root node
 		self.root_node.path = os.path.dirname(filename) + '\\'
 
-		# Open the file
+		# Open the file and load its content into our self.data attribute
 		self.open_file(filename)
 
 		# Let the root node parse the file content
-		self.root_node.parse_mdl_node(self.data)
+		self.root_node.parse_def_node(self.data)
 
-		# Load data files (.ply, .anm, etc)
+		# Load data files (.mdl, etc)
 		self.root_node.load_data()
 
 	def print_type(self):
 		self.root_node.print_type()
 
 	def blender_get_root_object(self):
-		skeleton_node = self.root_node.get_skeleton_node()
-
-		if skeleton_node:
-			bone_node = skeleton_node.get_root_bone_node()
-			if bone_node:
-				return bone_node.get_blender_object()
+		game_entity_node = self.root_node.get_game_entity_node()
+		if game_entity_node:
+			extension_node = game_entity_node.get_extension_node()
+			if extension_node:
+				return extension_node.blender_get_root_object()
 
 		return None
 
 	def open_file(self, filename):
-		if filename == None or os.path.splitext(filename)[1][1:].strip() != "mdl":
+		if filename == None or os.path.splitext(filename)[1][1:].strip() != "def":
 			raise Exception("Invalid file %s" % filename)
 
 		# Encode filename to filesystem encoding
@@ -119,7 +121,7 @@ class MDL:
 		# Build blender data first (meshes, objects, ...)
 		self.root_node.build_blender_data(blender_context)
 		# Build blender scene (link object hierarchy, link to scene, ...)
-		self.root_node.build_blender_scene(blender_context)
+		self.root_node.build_blender_scene(blender_context, use_animations)
 		# Check if we should load the animations
 		if use_animations:
 			# Animations start at 0

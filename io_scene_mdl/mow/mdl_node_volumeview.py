@@ -41,11 +41,11 @@ class MDL_NODE_VOLUMEVIEW(MDL_NODE):
 
 		print(type(self).__name__ + " Loading file " + filename)
 
-		try:
-			# Create a mesh object and load the PLY file
-			self.ply = PLY(filename)
-		except:
-			print(sys.exc_info()[0])
+		# try:
+		# Create a mesh object and load the PLY file
+		self.ply = PLY(filename)
+		# except:
+		# 	print(sys.exc_info()[0])
 
 		if self.ply:
 			# Get the name of the MTL file referenced inside the PLY file and add it to our data string for parsing

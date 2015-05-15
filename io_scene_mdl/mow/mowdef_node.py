@@ -22,9 +22,10 @@
 # Script Copyright (C) by Björn Martins Paz
 
 from __future__ import print_function
+
 import sys
 
-class MDL_NODE(object):
+class MOWDEF_NODE(object):
 	def __init__(self, parent):
 		self.parent = parent
 		self.data 	= None
@@ -48,16 +49,16 @@ class MDL_NODE(object):
 
 	@staticmethod
 	def create_node_from_type(type, parent):
-		module_name = 'mdl_node_' + type.lower()
+		module_name = 'mowdef_node_' + type.lower()
 		class_name = module_name.upper()
 		try:
 			m = __import__(module_name)
 			return getattr(m, class_name)(parent)
 		except:
-			print(sys.exc_info()[0])
+			print(sys.exc_info()[0], type)
 			return None
 
-	def parse_mdl_node(self, data):
+	def parse_def_node(self, data):
 		self.data = data
 
 		child_node_type = ''
@@ -106,7 +107,7 @@ class MDL_NODE(object):
 #							child_node.parent = self
 							child_node.path = self.path
 							# Parse the child data
-							child_node.parse_mdl_node(child_node_data)
+							child_node.parse_def_node(child_node_data)
 							# Add node to our list of children nodes
 							self.nodes.append(child_node)
 							# Clear things up for further processing
@@ -141,9 +142,9 @@ class MDL_NODE(object):
 		for node in self.nodes:
 			node.build_blender_data(blender_context)
 
-	def build_blender_scene(self, blender_context):
+	def build_blender_scene(self, blender_context, use_animations):
 		for node in self.nodes:
-			node.build_blender_scene(blender_context)
+			node.build_blender_scene(blender_context, use_animations)
 
 	def build_blender_animation(self, blender_context):
 		for node in self.nodes:

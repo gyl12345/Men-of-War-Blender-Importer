@@ -53,6 +53,12 @@ class MDL_NODE_SKELETON(MDL_NODE):
 		# Add bone node to our bone nodes array
 		self.bone_nodes.append(bone_node)
 
+	def get_root_bone_node(self):
+		if len(self.bone_nodes) > 0:
+			return self.bone_nodes[0]
+		else:
+			return None
+
 	def get_bone_node(self, bone_name):
 		for bone_node in self.bone_nodes:
 			if bone_node.bone_name == bone_name:

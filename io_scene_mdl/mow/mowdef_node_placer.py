@@ -21,24 +21,8 @@
 # Men of War MDL importer for Blender
 # Script Copyright (C) by Björn Martins Paz
 
-import argparse
-import os
-import struct
+from mowdef_node import MOWDEF_NODE
 
-from mdl import MDL
-from mowdef import MOWDEF
-
-parser = argparse.ArgumentParser()
-parser.add_argument('infile', nargs='?', help='Input file')
-args = parser.parse_args()
-infile = args.infile
-
-# Process MDL file
-if infile != None and os.path.splitext(infile)[1][1:].strip() == "mdl":
-	mdl = MDL(infile)
-# Process DEF file
-elif infile != None and os.path.splitext(infile)[1][1:].strip() == "def":
-	mowdef = MOWDEF(infile)
-else:
-    print("No .MDL or .DEF file found")
-    parser.print_help()
+class MOWDEF_NODE_PLACER(MOWDEF_NODE):
+	def __init__(self, parent):
+		super(MOWDEF_NODE_PLACER, self).__init__(parent)

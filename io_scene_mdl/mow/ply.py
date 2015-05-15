@@ -11,7 +11,12 @@ import struct
 PLYMAGICK = b"EPLYBNDS"
 SUPPORTED_ENTRY = [b"SKIN", b"MESH", b"VERT", b"INDX"]
 SUPPORTED_MESH = [0x0112, 0x1118]
-SUPPORTED_FORMAT = [0x0644, 0x0604, 0x0404, 0x0406, 0x0704, 0x705, 0x0744, 0x0745, 0x0C14, 0x0F14, 0x0F54, 0x0C54]
+SUPPORTED_FORMAT = [0x0404, 0x0405, 0x0406, 0x0444,
+                    0x0504, 0x0544,
+                    0x0644, 0x0604,
+                    0x0704, 0x705, 0x0744, 0x0745,
+                    0x0C14, 0x0C15, 0x0C54, 0x0C55,
+                    0x0F14, 0x0F15, 0x0F54]
 
 class PLY:
     def __init__(self, path):
@@ -59,11 +64,23 @@ class PLY:
                     if self.material_info in SUPPORTED_FORMAT:
                         if self.material_info == 0x0404:
                             pass
+                        elif self.material_info == 0x0405:
+                            pass
                         elif self.material_info == 0x0406:
+                            pass
+                        elif self.material_info == 0x0444:
+                            pass
+                        elif self.material_info == 0x0504:
+                            pass
+                        elif self.material_info == 0x0544:
                             pass
                         elif self.material_info == 0x0C14:
                             pass
+                        elif self.material_info == 0x0C15:
+                            pass
                         elif self.material_info == 0x0C54:
+                            pass
+                        elif self.material_info == 0x0C55:
                             pass
                         else:
                             color = f.read(0x4) # R G B A
@@ -88,16 +105,33 @@ class PLY:
                     print("Vertex description:", hex(self.vertex_description))
                     index = 0
                     for i in range(0, verts):
-                        if self.vertex_description == 0x00010024:
+                        if self.vertex_description == 0x00010020:
+                            vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffffff", f.read(32))
+                        elif self.vertex_description == 0x00010024:
                             vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffff4xff", f.read(36))
+                        elif self.vertex_description == 0x00010028:
+                            vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffff8xff", f.read(40))
+                        elif self.vertex_description == 0x0001002C:
+                            vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffff12xff", f.read(44))
+                        elif self.vertex_description == 0x00010030:
+                            vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffff16xff", f.read(48))
+                        elif self.vertex_description == 0x00010034:
+                            vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffff20xff", f.read(52))
+                        elif self.vertex_description == 0x00010038:
+                            vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffff24xff", f.read(56))
+
                         elif self.vertex_description == 0x00070020:
                             vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffffff", f.read(32))
                         elif self.vertex_description == 0x00070024:
                             vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffff4xff", f.read(36))
                         elif self.vertex_description == 0x00070028:
                             vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffff8xff", f.read(40))
+                        elif self.vertex_description == 0x0007002C:
+                            vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffffff12x", f.read(44))
                         elif self.vertex_description == 0x00070030:
                             vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffffff16x", f.read(48))
+                        elif self.vertex_description == 0x00070034:
+                            vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffffff20x", f.read(52))
                         elif self.vertex_description == 0x00070038:
                             vx,vy,vz,nx,ny,nz,U,V = struct.unpack("ffffffff24x", f.read(56))
                         else:

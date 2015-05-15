@@ -59,9 +59,9 @@ class ImportMDL(bpy.types.Operator, ImportHelper):
     bl_label = "Import MDL"
     bl_options = {'PRESET', 'UNDO'}
 
-    filename_ext = ".mdl"
+    filename_ext = ".def"
     filter_glob = StringProperty(
-            default="*.mdl",
+            default="*.def",
             options={'HIDDEN'},
             )
 
@@ -93,9 +93,9 @@ class ExportMDL(bpy.types.Operator, ExportHelper):
     bl_label = 'Export MDL'
     bl_options = {'PRESET'}
 
-    filename_ext = ".mdl"
+    filename_ext = ".mdl; .def"
     filter_glob = StringProperty(
-            default="*.mdl",
+            default="*.mdl;*.def",
             options={'HIDDEN'},
             )
 
@@ -108,11 +108,11 @@ class ExportMDL(bpy.types.Operator, ExportHelper):
 
 
 def menu_func_import(self, context):
-    self.layout.operator(ImportMDL.bl_idname, text="Men of War (.mdl)")
+    self.layout.operator(ImportMDL.bl_idname, text="Men of War (.def)")
 
 
 def menu_func_export(self, context):
-    self.layout.operator(ExportMDL.bl_idname, text="Men of War (.mdl)")
+    self.layout.operator(ExportMDL.bl_idname, text="Men of War (.def)")
 
 
 def register():
